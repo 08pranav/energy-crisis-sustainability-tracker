@@ -1,51 +1,46 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Activity, Globe, TrendingUp, AlertTriangle, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { LivePriceTicker } from './LivePriceTicker';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Globe, TrendingUp, Zap, DollarSign } from 'lucide-react'; // Using Lucide for clean icons
 
-const navLinks = [
-  { name: 'Overview', path: '/', icon: Globe },
-  { name: 'Live Prices', path: '/prices', icon: Activity },
-  { name: 'Supply Risks', path: '/supply', icon: AlertTriangle },
-  { name: 'Energy Trends', path: '/trends', icon: TrendingUp },
-  { name: 'Global Map', path: '/map', icon: Zap },
-];
+const Navbar = () => {
+  const location = useLocation();
+  
+  const navItems = [
+    { name: 'HOME', path: '/', icon: <Home size={18} /> },
+    { name: 'MAP', path: '/map', icon: <Globe size={18} /> },
+    { name: 'TRENDS', path: '/trends', icon: <TrendingUp size={18} /> },
+    { name: 'SUPPLY', path: '/supply', icon: <Zap size={18} /> },
+    { name: 'PRICES', path: '/prices', icon: <DollarSign size={18} /> },
+  ];
 
-export function Navbar() {
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-white/10 bg-slate-900/80 backdrop-blur-md">
-      <LivePriceTicker />
-      <div className="flex h-16 items-center px-4 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2 mr-8">
-          <Zap className="h-6 w-6 text-accent" />
-          <span className="font-mono text-xl font-bold tracking-tight text-white">
-            Energy<span className="text-accent">Watch</span>
-          </span>
-        </div>
-        <nav className="flex items-center space-x-1 flex-1">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            return (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-white/10 text-white'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  )
-                }
-              >
-                <Icon className="h-4 w-4" />
-                {link.name}
-              </NavLink>
-            );
-          })}
-        </nav>
+    <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+      {/* Liquid Glass Pill Container */}
+      <div className="flex items-center gap-2 p-2 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`flex items-center gap-2 px-6 py-3 rounded-[2rem] transition-all duration-500 ease-out group ${
+                isActive 
+                ? 'bg-white/10 text-cyan-400 shadow-[inset_0_0_10px_rgba(34,211,238,0.2)]' 
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span className={`${isActive ? 'scale-110' : 'scale-100'} transition-transform duration-300`}>
+                {item.icon}
+              </span>
+              <span className="text-[10px] font-bold tracking-[0.2em] font-mono">
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </nav>
   );
-}
+};
+
+export default Navbar;
