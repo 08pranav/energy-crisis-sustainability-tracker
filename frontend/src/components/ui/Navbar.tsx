@@ -14,30 +14,42 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-      {/* Liquid Glass Pill Container */}
-      <div className="flex items-center gap-2 p-2 bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`flex items-center gap-2 px-6 py-3 rounded-[2rem] transition-all duration-500 ease-out group ${
-                isActive 
-                ? 'bg-white/10 text-cyan-400 shadow-[inset_0_0_10px_rgba(34,211,238,0.2)]' 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <span className={`${isActive ? 'scale-110' : 'scale-100'} transition-transform duration-300`}>
-                {item.icon}
-              </span>
-              <span className="text-[10px] font-bold tracking-[0.2em] font-mono">
-                {item.name}
-              </span>
-            </Link>
-          );
-        })}
+    <nav className="fixed bottom-6 left-0 w-full z-50 pointer-events-none">
+
+      <div className="flex justify-center w-full bg-black/80 backdrop-blur-md pointer-events-auto pb-2 sm:pb-0">
+        <div className="flex items-center justify-around sm:justify-center gap-1 w-full sm:w-auto px-2 sm:px-8 py-2 relative overflow-x-auto hide-scrollbar">
+          
+          {/* Decorative Corner Brackets */}
+          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-500/50" />
+          <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-cyan-500/50" />
+          <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-cyan-500/50" />
+          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-500/50" />
+
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex items-center gap-2 px-6 py-2 transition-all duration-300 ease-out group border relative ${
+                  isActive 
+                  ? 'bg-cyan-950/40 text-cyan-400 border-cyan-500/30 shadow-[inset_0_0_15px_rgba(34,211,238,0.1)]' 
+                  : 'text-slate-500 border-transparent hover:text-white hover:border-slate-800 hover:bg-white/5'
+                }`}
+              >
+                {isActive && (
+                  <div className="absolute -top-px left-0 w-full h-[1px] bg-cyan-400" />
+                )}
+                <span className={`${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`}>
+                  {item.icon}
+                </span>
+                <span className="hidden sm:inline text-[10px] font-bold tracking-[0.2em] font-mono">
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

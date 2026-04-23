@@ -13,14 +13,14 @@ import MapPage from './pages/Map';
 function App() {
   return (
     // No Router here - it's already in main.tsx
-    <div className="relative min-h-screen bg-black text-white">
+    <div className="relative h-screen w-screen overflow-hidden bg-transparent text-white flex flex-col">
       
       {/* 1. TOP TICKER GOES HERE - Fixed at the very top */}
       <TopTicker />
 
       {/* 2. MAIN CONTENT AREA */}
-      {/* 'pt-10' (padding-top) prevents the ticker from covering your dashboard cards */}
-      <main className="pt-10 pb-32"> 
+      {/* 30px padding top from ticker */}
+      <main className="flex-1 w-full mt-[30px] overflow-hidden"> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/prices" element={<Prices />} />

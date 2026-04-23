@@ -20,6 +20,8 @@ export function SvgGlobe() {
   return (
     <div className="w-[900px] h-[900px] flex items-center justify-center opacity-80 mix-blend-screen mix-blend-lighten pointer-events-none drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
       <ComposableMap
+        width={900}
+        height={900}
         projection="geoOrthographic"
         projectionConfig={{
           rotate: rotation,

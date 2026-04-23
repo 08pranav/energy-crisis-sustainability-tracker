@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ConflictBadge } from '@/components/ui/Badges';
+import { HudPanel } from '@/components/ui/HudPanel';
 import { MOCK_COUNTRY_PROFILES } from '@/lib/data';
 
 const CONFLICT_EVENTS = [
@@ -14,48 +14,75 @@ export default function Supply() {
   const topRisk = [...MOCK_COUNTRY_PROFILES].sort((a, b) => b.conflictRisk - a.conflictRisk).slice(0, 10);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto w-full flex flex-col gap-6 h-full mt-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Supply Disruptions</h1>
-          <p className="text-slate-400">Analyze geopolitical conflict impacts on global energy supply routes.</p>
+    <div className="w-full h-screen p-4 pb-32 bg-transparent font-mono text-slate-300 overflow-hidden relative flex flex-col items-center justify-start">
+      
+      {/* Absolute Header */}
+      <div className="absolute top-10 left-10 z-10 flex flex-col gap-1">
+        <div className="text-xl font-bold tracking-widest text-white flex items-center gap-3">
+          <div className="w-4 h-4 border border-cyan-500 flex items-center justify-center rounded-sm">
+            <div className="w-1.5 h-1.5 bg-cyan-500 animate-pulse"></div>
+          </div>
+          SECTOR VIEW // SUPPLY
         </div>
-        <ConflictBadge active={true} />
+        <div className="text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase mt-1 hidden sm:block">GLOBAL DISRUPTIONS & LOGISTICS NETWORK</div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="glass-card p-6 rounded-xl flex flex-col gap-4">
-          <h3 className="text-slate-400 font-medium">Recent Major Disruptions</h3>
-          <div className="flex flex-col gap-3">
-            {CONFLICT_EVENTS.map(event => (
-              <div key={event.id} className="bg-slate-900/50 p-4 rounded-lg border border-white/5 flex justify-between items-center">
-                <div>
-                  <div className="text-white font-medium">{event.name}</div>
-                  <div className="text-xs text-slate-500">{event.year}</div>
+      <div className="w-full flex-1 max-w-[1200px] mt-32 relative flex flex-col lg:flex-row gap-6 px-4 lg:px-10 items-stretch pointer-events-auto h-full pb-20">
+        
+        {/* Left Panel */}
+        <div className="flex-1 flex flex-col gap-6">
+          <HudPanel title="Recent Major Disruptions // INCIDENTS">
+            <div className="flex flex-col gap-3">
+              {CONFLICT_EVENTS.map(event => (
+                <div key={event.id} className="bg-black/80 p-4 relative border border-slate-800 flex justify-between items-center group hover:border-cyan-500/50 transition-colors">
+                  <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white/40 group-hover:border-white transition-colors" />
+                  <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white/40 group-hover:border-white transition-colors" />
+                  
+                  <div>
+                    <div className="text-white font-bold tracking-widest uppercase text-xs">{event.name}</div>
+                    <div className="text-[10px] text-slate-500 mt-1">LOG_DATE: {event.year}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] text-slate-500 tracking-[0.2em] mb-1">IMPACT SCORE</div>
+                    <div className="text-orange-500 font-bold text-lg">{event.impact}<span className="text-[10px] text-slate-500">/100</span></div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs text-slate-400">Impact Score</div>
-                  <div className="text-red-400 font-bold">{event.impact}/100</div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </HudPanel>
         </div>
 
-        <div className="glass-card p-6 rounded-xl">
-          <h3 className="text-slate-400 font-medium mb-4">Top 10 Risk Exposure by Country</h3>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={topRisk} layout="vertical" margin={{ left: 20, right: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" horizontal={false} />
-                <XAxis type="number" stroke="#ffffff50" />
-                <YAxis dataKey="name" type="category" stroke="#ffffff50" width={100} fontSize={12} />
-                <Tooltip cursor={{ fill: '#ffffff10' }} contentStyle={{ backgroundColor: '#0f172a', borderColor: '#ffffff20' }} />
-                <Bar dataKey="conflictRisk" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={16} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+        {/* Right Panel */}
+        <div className="flex-1 flex flex-col gap-6">
+          <HudPanel title="Top 10 Risk Exposure // GLOBAL INDEX">
+            <div className="h-[400px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topRisk} layout="vertical" margin={{ left: 0, right: 10, top: 10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={false} />
+                  <XAxis type="number" stroke="#64748b" tick={{ fontSize: 10, fontFamily: 'monospace' }} />
+                  <YAxis dataKey="name" type="category" stroke="#64748b" width={80} tick={{ fontSize: 10, fontFamily: 'monospace' }} />
+                  <Tooltip 
+                    cursor={{ fill: '#0f172a' }} 
+                    contentStyle={{ backgroundColor: '#000000', borderColor: '#22d3ee', fontFamily: 'monospace', fontSize: '10px' }} 
+                  />
+                  <Bar dataKey="conflictRisk" fill="#ef4444" radius={[0, 2, 2, 0]} barSize={12} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="mt-4 border-t border-white/10 pt-4 flex gap-4 text-[10px]">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-red-500"></div>
+                <span className="text-slate-400">CRITICAL RISK</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-[#0f172a] border border-slate-800"></div>
+                <span className="text-slate-400">BASELINE</span>
+              </div>
+            </div>
+          </HudPanel>
         </div>
+
       </div>
     </div>
   );

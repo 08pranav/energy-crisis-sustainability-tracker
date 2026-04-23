@@ -27,32 +27,32 @@ export default function Home() {
   const gasArray = initialCommodityData.natural_gas;
   
   return (
-    <div className="absolute inset-0 w-full h-full p-4 overflow-hidden bg-transparent flex flex-col font-mono text-slate-300">
+    <div className="w-full h-full p-2 lg:p-4 pb-24 lg:pb-32 bg-transparent flex flex-col font-mono text-slate-300 overflow-hidden">
       
       {/* HUD Header */}
-      <div className="flex justify-between items-start z-10 w-full shrink-0">
-        <div className="flex flex-col gap-1">
-          <div className="text-2xl font-bold tracking-widest text-white flex items-center gap-3">
-            <div className="w-5 h-5 border border-red-500 flex items-center justify-center rounded-sm relative">
+      <div className="flex flex-col lg:flex-row justify-between items-start z-10 w-full shrink-0 gap-4 lg:gap-0">
+        <div className="flex flex-col gap-1 w-full lg:w-auto text-center lg:text-left">
+          <div className="text-xl lg:text-2xl font-bold tracking-widest text-white flex items-center justify-center lg:justify-start gap-3">
+            <div className="w-5 h-5 border border-red-500 flex items-center justify-center rounded-sm relative hidden sm:flex">
               <div className="w-2 h-2 bg-red-500 animate-pulse"></div>
             </div>
             ENERGY VIEW // DATAV
           </div>
-          <div className="text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase mt-1">GLOBAL EARLY WARNING INFRASTRUCTURE</div>
+          <div className="text-[8px] lg:text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase mt-1">GLOBAL EARLY WARNING INFRASTRUCTURE</div>
         </div>
         
-        <div className="text-right flex flex-col gap-1 font-bold">
+        <div className="text-center lg:text-right flex flex-col gap-1 font-bold w-full lg:w-auto">
           <div className="text-[10px] text-cyan-400">SYS_STATUS: NOMINAL</div>
-          <div className="text-sm tracking-widest text-slate-400 font-normal">T: <span className="text-white">2026.04.23 // 23:31</span></div>
-          <div className="text-[10px] text-slate-600">CONNECTION: SECURE (wss://)</div>
+          <div className="text-xs lg:text-sm tracking-widest text-slate-400 font-normal">T: <span className="text-white">2026.04.23 // 23:31</span></div>
+          <div className="text-[10px] text-slate-600 hidden sm:block">CONNECTION: SECURE (wss://)</div>
         </div>
       </div>
 
-      {/* Main 3-Col HUD Grid */}
-      <div className="relative flex-1 w-full mt-4 flex gap-4 overflow-hidden pointer-events-none">
+      {/* Main HUD Grid */}
+      <div className="relative flex-1 w-full mt-4 flex flex-col lg:flex-row gap-4 overflow-y-auto lg:overflow-hidden pointer-events-none pb-20 lg:pb-0">
         
         {/* Left Column Controls */}
-        <div className="w-[320px] shrink-0 h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-auto pb-8 hide-scrollbar">
+        <div className="w-full lg:w-[320px] shrink-0 h-auto lg:h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-visible lg:overflow-y-auto pb-2 lg:pb-8 hide-scrollbar order-2 lg:order-1">
           
           <HudPanel title="System Analytics // WTI Crude">
             <div className="text-4xl text-white font-bold tracking-tighter mb-1 mt-1">$82.45</div>
@@ -110,21 +110,24 @@ export default function Home() {
         </div>
 
         {/* Center Globe Container */}
-        <div className="flex-1 h-full relative flex items-center justify-center">
+        <div className="flex-1 min-h-[400px] h-[50vh] lg:h-full relative flex items-center justify-center pointer-events-none order-1 lg:order-2 overflow-hidden lg:overflow-visible my-8 lg:my-0">
           {/* Overlay Targeting Reticle */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 transform scale-50 lg:scale-[0.85] xl:scale-100">
             <div className="w-[400px] h-[400px] rounded-full border border-dashed border-white/40 animate-[spin_60s_linear_infinite]" />
             <div className="w-[420px] h-[420px] rounded-full border border-white/20 absolute animate-[spin_40s_linear_infinite_reverse]" />
             <div className="absolute w-[800px] h-px bg-white/20" />
             <div className="absolute h-[800px] w-px bg-white/20" />
           </div>
           
-          <SvgGlobe />
+          <div className="absolute inset-0 flex items-center justify-center transform scale-[0.6] lg:scale-[0.85] xl:scale-100 mt-20 lg:mt-0">
+            <SvgGlobe />
+          </div>
+          
           <div className="pointer-events-none absolute inset-0 h-full bg-[radial-gradient(circle_at_50%_200%,rgba(0,0,0,0.5),rgba(255,255,255,0))]" />
         </div>
 
         {/* Right Column Controls */}
-        <div className="w-[320px] shrink-0 h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-auto pb-8 hide-scrollbar">
+        <div className="w-full lg:w-[320px] shrink-0 h-auto lg:h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-visible lg:overflow-y-auto pb-2 lg:pb-8 hide-scrollbar order-3 lg:order-3">
           
           <HudPanel title="SDG Targets // Shift">
             <div className="flex justify-between text-[10px] mb-1 font-bold">

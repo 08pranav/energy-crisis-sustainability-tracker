@@ -9,56 +9,71 @@ export default function MapPage() {
   const countryProfile = MOCK_COUNTRY_PROFILES.find(p => p.name === selectedCountry);
 
   return (
-    <div className="w-full h-full flex flex-col relative overflow-hidden">
-      <div className="absolute top-8 left-8 z-10">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Global Map</h1>
-        <p className="text-slate-400">Click any country to view its energy profile.</p>
+    <div className="w-full h-screen p-4 pb-32 bg-transparent font-mono text-slate-300 overflow-hidden relative flex flex-col items-center justify-center">
+      
+      {/* Absolute Header */}
+      <div className="absolute top-10 left-10 z-10 flex flex-col gap-1">
+        <div className="text-xl font-bold tracking-widest text-white flex items-center gap-3">
+          <div className="w-4 h-4 border border-cyan-500 flex items-center justify-center rounded-sm">
+            <div className="w-1.5 h-1.5 bg-cyan-500 animate-pulse"></div>
+          </div>
+          SECTOR VIEW // MAP
+        </div>
+        <div className="text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase mt-1 hidden sm:block">INTERACTIVE TOPOLOGY PROTOCOL</div>
         
-        <div className="mt-4 flex gap-2 bg-slate-900/80 backdrop-blur-md border border-white/5 p-1 rounded-lg w-fit">
-          <button className="px-3 py-1.5 rounded-md text-xs font-medium bg-accent/20 text-accent transition-colors">Dependency Risk</button>
-          <button className="px-3 py-1.5 rounded-md text-xs font-medium text-slate-400 hover:text-white transition-colors">Renewables</button>
+        <div className="mt-4 flex gap-2 w-fit">
+          <div className="px-3 py-1 text-[10px] tracking-widest border border-orange-500/50 bg-black/60 text-orange-400">DEPENDENCY RISK</div>
+          <div className="px-3 py-1 text-[10px] tracking-widest border border-slate-800 bg-black/60 text-slate-400">RENEWABLES</div>
         </div>
       </div>
 
-      <div className="flex-1 w-full relative">
+      <div className="w-full flex-1 max-w-[1200px] relative flex items-center justify-center transform scale-75 lg:scale-100">
         <EnergyMap />
       </div>
 
       {selectedCountry && (
-        <div className="absolute right-0 top-0 bottom-0 w-80 bg-slate-900/95 backdrop-blur-md border-l border-white/10 p-6 flex flex-col gap-6 shadow-2xl animate-in slide-in-from-right">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold">{selectedCountry}</h2>
-            <button onClick={() => setSelectedCountry(null)} className="text-slate-400 hover:text-white transition-colors">
-              <X className="w-5 h-5" />
+        <div className="absolute right-0 top-0 bottom-0 w-[400px] max-w-[100vw] bg-black/90 backdrop-blur-md border-l border-slate-800 p-8 flex flex-col gap-6 slide-in-from-right duration-300 pointer-events-auto overflow-y-auto">
+          
+          <div className="flex justify-between items-center border-b border-white/10 pb-4">
+            <div className="text-sm tracking-widest text-cyan-400">NODE ID // {selectedCountry.toUpperCase()}</div>
+            <button onClick={() => setSelectedCountry(null)} className="text-slate-500 hover:text-white transition-colors border border-slate-800 p-1">
+              <X className="w-4 h-4" />
             </button>
           </div>
           
           {countryProfile ? (
             <div className="flex flex-col gap-4">
-              <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col gap-1">
-                <span className="text-xs text-slate-400">Dependency Risk</span>
-                <span className={`text-2xl font-bold ${countryProfile.dependency > 50 ? 'text-red-400' : 'text-emerald-400'}`}>
+              <div className="border border-slate-800 bg-black p-4 relative">
+                <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white" />
+                <div className="text-[10px] tracking-[0.2em] text-slate-500 mb-1">DEPENDENCY RISK</div>
+                <div className={`text-3xl font-bold tracking-tighter ${countryProfile.dependency > 50 ? 'text-red-500' : 'text-cyan-400'}`}>
                   {countryProfile.dependency}%
-                </span>
+                </div>
               </div>
-              <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col gap-1">
-                <span className="text-xs text-slate-400">Primary Energy Source</span>
-                <span className="text-lg font-bold">{countryProfile.primary}</span>
+              
+              <div className="border border-slate-800 bg-black p-4 relative">
+                <div className="absolute top-0 right-0 w-1 h-1 border-t border-r border-white" />
+                <div className="text-[10px] tracking-[0.2em] text-slate-500 mb-1">PRIMARY SOURCE</div>
+                <div className="text-lg font-bold text-white uppercase">{countryProfile.primary}</div>
               </div>
-              <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col gap-1">
-                <span className="text-xs text-slate-400">Renewable Share</span>
-                <span className="text-lg font-bold text-accent">{countryProfile.renewableShare}%</span>
+              
+              <div className="border border-slate-800 bg-black p-4 relative">
+                <div className="absolute bottom-0 left-0 w-1 h-1 border-b border-l border-white" />
+                <div className="text-[10px] tracking-[0.2em] text-slate-500 mb-1">RENEWABLE SHARE</div>
+                <div className="text-xl font-bold text-cyan-400 tracking-tighter">{countryProfile.renewableShare}%</div>
               </div>
-              <div className="bg-slate-800/50 p-4 rounded-lg flex flex-col gap-1">
-                <span className="text-xs text-slate-400">Geopolitical Conflict Exposure</span>
-                <div className="w-full bg-slate-950 rounded-full h-2 mt-2">
-                  <div className="bg-red-500 h-2 rounded-full" style={{ width: `${countryProfile.conflictRisk}%` }}></div>
+              
+              <div className="border border-slate-800 bg-black p-4 relative">
+                <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white" />
+                <div className="text-[10px] tracking-[0.2em] text-slate-500 mb-2">GEOPOLITICAL CONFLICT EXPOSURE</div>
+                <div className="w-full bg-slate-900 h-1">
+                  <div className="bg-orange-500 h-full" style={{ width: `${countryProfile.conflictRisk}%` }}></div>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="text-slate-400 text-sm">
-              Detailed energy profile not available for this region.
+            <div className="text-slate-500 text-[10px] font-bold tracking-widest border border-dashed border-slate-800 p-8 text-center">
+              TELEMETRY DATA UNAVAILABLE FOR SECTOR
             </div>
           )}
         </div>
