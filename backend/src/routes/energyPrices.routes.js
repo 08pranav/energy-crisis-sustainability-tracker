@@ -19,4 +19,8 @@ router.get('/live', authenticate, (req, res) => {
   res.json({ success: true, message: 'Polling endpoint scaffolded' });
 });
 
+router.get('/prices/live', authenticate, (req, res) => {
+  res.json({ success: true, message: 'Live price alias endpoint scaffolded' });
+});
+
 export default router;

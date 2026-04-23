@@ -7,6 +7,8 @@ import renewablesRoutes from './renewables.routes.js';
 import forecastRoutes from './forecast.routes.js';
 import alertsRoutes from './alerts.routes.js';
 import adminRoutes from './admin.routes.js';
+import conflictsRoutes from './conflicts.routes.js';
+import reportsRoutes from './reports.routes.js';
 
 const router = express.Router();
 
@@ -18,5 +20,7 @@ router.use('/renewables', renewablesRoutes);
 router.use('/forecast', forecastRoutes);
 router.use('/alerts', alertsRoutes);
 router.use('/admin', adminRoutes);
+router.use('/conflicts', conflictsRoutes);
+router.use('/reports', reportsRoutes);
 
 export default router;
