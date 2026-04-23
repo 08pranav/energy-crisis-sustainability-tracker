@@ -10,11 +10,11 @@ function TinyHUDChart({ data, dataKey, color }: { data: any[], dataKey: string, 
     <div className="h-24 w-full mt-2 border border-slate-800/50 p-1 bg-black/20">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
-          <Line type="step" dataKey={dataKey} stroke={color} strokeWidth={1} dot={false} isAnimationActive={false} />
+          <Line type="step" dataKey={dataKey} stroke={color} strokeWidth={1.5} dot={false} isAnimationActive={false} />
           <Tooltip 
-            contentStyle={{ backgroundColor: '#000', border: '1px solid #10B981', fontSize: '10px' }}
-            itemStyle={{ color: '#10B981' }}
-            cursor={{ stroke: '#ffffff20', strokeWidth: 1, strokeDasharray: '2 2' }}
+            contentStyle={{ backgroundColor: '#000', border: `1px solid ${color}`, fontSize: '10px' }}
+            itemStyle={{ color: color }}
+            cursor={{ stroke: '#ffffff30', strokeWidth: 1, strokeDasharray: '2 2' }}
           />
         </LineChart>
       </ResponsiveContainer>
@@ -33,17 +33,17 @@ export default function Home() {
       <div className="flex justify-between items-start z-10 w-full shrink-0">
         <div className="flex flex-col gap-1">
           <div className="text-2xl font-bold tracking-widest text-white flex items-center gap-3">
-            <div className="w-4 h-4 border-2 border-emerald-500 rounded-sm relative">
-              <div className="absolute inset-0 bg-emerald-500/20 animate-pulse"></div>
+            <div className="w-5 h-5 border border-red-500 flex items-center justify-center rounded-sm relative">
+              <div className="w-2 h-2 bg-red-500 animate-pulse"></div>
             </div>
-            ENERGY // CRISIS // DATAV
+            ENERGY VIEW // DATAV
           </div>
-          <div className="text-xs text-slate-500 tracking-[0.2em]">GLOBAL EARLY WARNING INFRASTRUCTURE</div>
+          <div className="text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase mt-1">GLOBAL EARLY WARNING INFRASTRUCTURE</div>
         </div>
         
-        <div className="text-right flex flex-col gap-1">
-          <div className="text-[10px] text-emerald-500">SYS_STATUS: NOMINAL</div>
-          <div className="text-xs tracking-widest">T: <span className="text-white">2026.04.23 // 23:31</span></div>
+        <div className="text-right flex flex-col gap-1 font-bold">
+          <div className="text-[10px] text-cyan-400">SYS_STATUS: NOMINAL</div>
+          <div className="text-sm tracking-widest text-slate-400 font-normal">T: <span className="text-white">2026.04.23 // 23:31</span></div>
           <div className="text-[10px] text-slate-600">CONNECTION: SECURE (wss://)</div>
         </div>
       </div>
@@ -55,41 +55,41 @@ export default function Home() {
         <div className="w-[320px] shrink-0 h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-auto pb-8 hide-scrollbar">
           
           <HudPanel title="System Analytics // WTI Crude">
-            <div className="text-4xl text-white font-bold tracking-tighter mb-1">$82.45</div>
-            <div className="text-xs text-emerald-400 mb-4">+1.2% // Trend Accelerating</div>
-            <TinyHUDChart data={wtiArray} dataKey="price" color="#10B981" />
+            <div className="text-4xl text-white font-bold tracking-tighter mb-1 mt-1">$82.45</div>
+            <div className="text-[10px] text-cyan-400 mb-4">+1.2% // Trend Accelerating</div>
+            <TinyHUDChart data={wtiArray} dataKey="price" color="#ffffff" />
             <div className="grid grid-cols-2 gap-2 mt-4 text-[10px]">
-              <div className="bg-black/40 p-2 border border-slate-800">
+              <div className="bg-black/60 p-2 border border-slate-800">
                 <div className="text-slate-500">VOLATILITY</div>
-                <div className="text-white">MED // 0.85</div>
+                <div className="text-white font-bold">MED // 0.85</div>
               </div>
-              <div className="bg-black/40 p-2 border border-slate-800">
+              <div className="bg-black/60 p-2 border border-slate-800">
                 <div className="text-slate-500">PROJECTION</div>
-                <div className="text-amber-400">UP // +2.4%</div>
+                <div className="text-orange-400 font-bold">UP // +2.4%</div>
               </div>
             </div>
           </HudPanel>
 
           <HudPanel title="Conflict Impact Matrix">
-            <div className="space-y-2 text-[10px]">
+            <div className="space-y-2 text-[10px] font-bold">
               <div className="flex justify-between items-center border-b border-white/5 pb-1">
                 <span className="text-slate-400">RUSSIA // UKR</span>
-                <span className="text-red-400">CRITICAL [95]</span>
+                <span className="text-red-500">CRITICAL [95]</span>
               </div>
               <div className="flex justify-between items-center border-b border-white/5 pb-1">
                 <span className="text-slate-400">RED SEA RT</span>
-                <span className="text-amber-400">HIGH [80]</span>
+                <span className="text-orange-400">HIGH [80]</span>
               </div>
               <div className="flex justify-between items-center pb-1">
                 <span className="text-slate-400">EUR GAS TENSION</span>
-                <span className="text-emerald-400">STABLE [40]</span>
+                <span className="text-cyan-400">STABLE [40]</span>
               </div>
             </div>
             {/* simple bar viz */}
             <div className="mt-4 flex flex-col gap-1.5">
-              <div className="h-1.5 w-full bg-slate-900 overflow-hidden"><div className="h-full bg-red-500 w-[95%]"></div></div>
-              <div className="h-1.5 w-full bg-slate-900 overflow-hidden"><div className="h-full bg-amber-500 w-[80%]"></div></div>
-              <div className="h-1.5 w-full bg-slate-900 overflow-hidden"><div className="h-full bg-emerald-500 w-[40%]"></div></div>
+              <div className="h-1.5 w-full bg-slate-900 overflow-hidden"><div className="h-full bg-red-600 w-[95%]"></div></div>
+              <div className="h-1.5 w-full bg-slate-900 overflow-hidden"><div className="h-full bg-orange-500 w-[80%]"></div></div>
+              <div className="h-1.5 w-full bg-slate-900 overflow-hidden"><div className="h-full bg-cyan-500 w-[40%]"></div></div>
             </div>
           </HudPanel>
 
@@ -113,10 +113,10 @@ export default function Home() {
         <div className="flex-1 h-full relative flex items-center justify-center">
           {/* Overlay Targeting Reticle */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-            <div className="w-[400px] h-[400px] rounded-full border border-dashed border-emerald-500/50 animate-[spin_60s_linear_infinite]" />
-            <div className="w-[420px] h-[420px] rounded-full border border-emerald-500/20 absolute animate-[spin_40s_linear_infinite_reverse]" />
-            <div className="absolute w-[800px] h-px bg-emerald-500/20" />
-            <div className="absolute h-[800px] w-px bg-emerald-500/20" />
+            <div className="w-[400px] h-[400px] rounded-full border border-dashed border-white/40 animate-[spin_60s_linear_infinite]" />
+            <div className="w-[420px] h-[420px] rounded-full border border-white/20 absolute animate-[spin_40s_linear_infinite_reverse]" />
+            <div className="absolute w-[800px] h-px bg-white/20" />
+            <div className="absolute h-[800px] w-px bg-white/20" />
           </div>
           
           <SvgGlobe />
@@ -127,43 +127,45 @@ export default function Home() {
         <div className="w-[320px] shrink-0 h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-auto pb-8 hide-scrollbar">
           
           <HudPanel title="SDG Targets // Shift">
-            <div className="flex justify-between text-xs mb-1">
+            <div className="flex justify-between text-[10px] mb-1 font-bold">
               <span className="text-slate-400">RENEWABLE MIX</span>
-              <span className="text-emerald-400">28.4%</span>
+              <span className="text-cyan-400">28.4%</span>
             </div>
             <div className="h-1 w-full bg-slate-900 mb-4">
-              <div className="h-full bg-emerald-500 w-[28.4%] animate-pulse"></div>
+              <div className="h-full bg-cyan-400 w-[28.4%] animate-pulse"></div>
             </div>
 
-            <div className="flex justify-between text-xs mb-1">
+            <div className="flex justify-between text-[10px] mb-1 font-bold">
               <span className="text-slate-400">FOSSIL DEPENDENCY</span>
-              <span className="text-red-400">71.6%</span>
+              <span className="text-orange-400">71.6%</span>
             </div>
             <div className="h-1 w-full bg-slate-900 mb-4">
-              <div className="h-full bg-red-500 w-[71.6%]"></div>
+              <div className="h-full bg-orange-500 w-[71.6%]"></div>
             </div>
 
-            <div className="text-[10px] text-slate-500 mt-4 border-t border-white/5 pt-2">
+            <div className="text-[10px] text-slate-500 mt-4 border-t border-white/5 pt-2 font-bold">
               TARGET DIFF: <span className="text-white">-12.5%</span> (2030 GOAL)
             </div>
           </HudPanel>
 
           <HudPanel title="Natural Gas Flux // EU">
-            <div className="text-2xl text-white font-bold tracking-tighter mb-1">$2.84 <span className="text-xs font-normal text-slate-500">/ MMBtu</span></div>
-            <TinyHUDChart data={gasArray} dataKey="price" color="#F59E0B" />
+            <div className="text-2xl text-white font-bold tracking-tighter mb-1 mt-1">$2.84 <span className="text-[10px] font-normal text-slate-500">/ MMBtu</span></div>
+            <TinyHUDChart data={gasArray} dataKey="price" color="#22d3ee" />
           </HudPanel>
 
           <HudPanel title="Node Detection">
             <div className="flex gap-4">
-              <div className="w-16 h-16 border border-emerald-500/30 flex items-center justify-center p-1 bg-black/40">
-                <div className="w-full h-full bg-emerald-500/20 animate-pulse relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-[8px] text-emerald-500">SCAN</div>
+              <div className="w-16 h-16 border border-cyan-500/40 flex items-center justify-center p-1 bg-black/60 relative">
+                <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white" />
+                <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white" />
+                <div className="w-full h-full bg-cyan-900/40 animate-pulse relative">
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] text-cyan-400 font-bold tracking-widest">ON</div>
                 </div>
               </div>
-              <div className="flex-1 flex flex-col justify-center gap-1 text-[10px]">
+              <div className="flex-1 flex flex-col justify-center gap-1 text-[10px] font-bold">
                 <div className="text-slate-400">ID: N-4892</div>
                 <div className="text-white">LAT: 48.8566 // LNG: 2.3522</div>
-                <div className="text-emerald-400">STATUS: ACTIVE</div>
+                <div className="text-cyan-400">STATUS: ACTIVE</div>
               </div>
             </div>
           </HudPanel>

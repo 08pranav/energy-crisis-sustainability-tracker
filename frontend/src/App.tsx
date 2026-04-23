@@ -9,7 +9,7 @@ import MapPage from './pages/Map';
 
 function App() {
   return (
-    <div className="min-h-screen font-mono bg-black text-white">
+    <div className="min-h-screen font-mono bg-transparent text-white">
       <main className="h-screen w-screen overflow-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
