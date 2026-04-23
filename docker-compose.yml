@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  mongodb:
+    image: mongo:7
+    container_name: energy-crisis-mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: energy-crisis-backend
+    env_file:
+      - ./backend/.env.example
+    depends_on:
+      - mongodb
+    ports:
+      - '5000:5000'
+
+  frontend:
+    build: ./frontend
+    container_name: energy-crisis-frontend
+    env_file:
+      - ./frontend/.env.example
+    depends_on:
+      - backend
+    ports:
+      - '5173:5173'
+
+volumes:
+  mongo_data:
