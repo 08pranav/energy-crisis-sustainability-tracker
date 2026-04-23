@@ -9,12 +9,8 @@ import MapPage from './pages/Map';
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-50 selection:bg-accent/30">
-      <Navbar />
-      <main className="flex-1 flex flex-col overflow-hidden relative">
-        {/* subtle background glow */}
-        <div className="absolute top-0 inset-x-0 h-96 bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
-        
+    <div className="min-h-screen font-mono bg-black text-white">
+      <main className="h-screen w-screen overflow-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/prices" element={<Prices />} />
