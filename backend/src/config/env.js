@@ -16,9 +16,9 @@ export const env = {
   openaiApiKey: process.env.OPENAI_API_KEY || '',
   eiaApiKey: process.env.EIA_API_KEY || '',
   alphaVantageKey: process.env.ALPHA_VANTAGE_KEY || '',
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '',
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '',
-  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '',
-  upstashRedisUrl: process.env.UPSTASH_REDIS_URL || process.env.UPSTASH_REDIS_REST_URL || '',
+  supabaseUrl: (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '').trim(),
+  supabaseAnonKey: (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim(),
+  supabaseServiceRoleKey: (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || '').trim(),
+  upstashRedisUrl: (process.env.UPSTASH_REDIS_URL || process.env.UPSTASH_REDIS_REST_URL || '').trim(),
   upstashRedisToken: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.UPSTASH_REDIS_TOKEN || ''
 };

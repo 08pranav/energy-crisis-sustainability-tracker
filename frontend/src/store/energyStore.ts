@@ -44,12 +44,13 @@ export const useEnergyStore = create<EnergyState>((set) => ({
     try {
       const response = await fetch('http://localhost:5001/api/energy-prices');
       const payload = await response.json();
+      console.log('API Response:', payload);
 
       if (!response.ok || !payload.success) {
         throw new Error(payload?.message || 'Failed to fetch energy prices');
       }
 
-      const historical = payload.data?.historical;
+      const historical = payload.data;
       if (!Array.isArray(historical)) {
         throw new Error('No historical energy prices returned');
       }

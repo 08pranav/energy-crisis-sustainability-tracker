@@ -26,14 +26,15 @@ async function testEiaApi() {
       return { status: 'SKIP', service: 'EIA API', reason: 'EIA_API_KEY not configured', timestamp: new Date().toISOString() };
     }
 
-    const url = 'https://api.eia.gov/v2/';
+    const url = `https://api.eia.gov/v2/steo/data/?api_key=${env.eiaApiKey}&data[]=value`;
     const response = await fetch(url);
 
     if (!response.ok) {
       return { status: 'FAIL', service: 'EIA API', error: `HTTP ${response.status}`, timestamp: new Date().toISOString() };
     }
 
-    return { status: 'PASS', service: 'EIA API', data: { endpoint: url }, timestamp: new Date().toISOString() };
+    const body = await response.json();
+    return { status: 'PASS', service: 'EIA API', data: { endpoint: url, records: Array.isArray(body?.response?.data) ? body.response.data.length : 'unknown' }, timestamp: new Date().toISOString() };
   } catch (error) {
     return { status: 'FAIL', service: 'EIA API', error: error.message, timestamp: new Date().toISOString() };
   }
@@ -95,7 +96,6 @@ async function testSupabase() {
     const response = await fetch(`${env.supabaseUrl}/rest/v1/`, {
       headers: {
         Authorization: `Bearer ${env.supabaseServiceRoleKey}`,
-        apikey: env.supabaseServiceRoleKey,
         'Content-Type': 'application/json'
       }
     });
