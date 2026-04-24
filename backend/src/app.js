@@ -4,13 +4,15 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import apiRoutes from './routes/index.js';
+import energyPricesRoutes from './routes/energyPrices.routes.js';
 import { env } from './config/env.js';
 import { errorMiddleware, notFoundMiddleware } from './middleware/error.middleware.js';
 
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.corsOrigins, credentials: true }));
+const allowedOrigins = new Set([...env.corsOrigins, 'http://localhost:5173']);
+app.use(cors({ origin: Array.from(allowedOrigins), credentials: true }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));
@@ -28,6 +30,7 @@ app.get('/health', (req, res) => {
   res.json({ success: true, message: 'API healthy' });
 });
 
+app.use('/api/energy-prices', energyPricesRoutes);
 app.use('/api', apiRoutes);
 
 app.use(notFoundMiddleware);

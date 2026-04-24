@@ -21,15 +21,25 @@ io.on('connection', (socket) => {
 });
 
 async function bootstrap() {
-  await connectDatabase();
+  try {
+    await connectDatabase();
+    // eslint-disable-next-line no-console
+    console.log('✓ MongoDB connected');
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('⚠️ Warning: MongoDB not connected. Proceeding with API routes only.');
+    // eslint-disable-next-line no-console
+    console.warn('Error details:', error.message);
+  }
+
   server.listen(env.port, () => {
     // eslint-disable-next-line no-console
-    console.log(`Backend running on port ${env.port}`);
+    console.log(`✓ Backend running on port ${env.port}`);
   });
 }
 
 bootstrap().catch((error) => {
   // eslint-disable-next-line no-console
-  console.error('Startup failed:', error);
+  console.error('✗ Startup failed:', error);
   process.exit(1);
 });

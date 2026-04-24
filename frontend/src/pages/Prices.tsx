@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -10,9 +9,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
-import { linearRegression, linearRegressionLine } from 'simple-statistics';
 import { useEnergyStore, CommodityType } from '@/store/energyStore';
-import { initialCommodityData } from '@/lib/data';
 import { SDGBadge } from '@/components/ui/Badges';
 
 const COMMODITIES: { id: CommodityType; name: string }[] = [
@@ -24,38 +21,27 @@ const COMMODITIES: { id: CommodityType; name: string }[] = [
 ];
 
 export default function Prices() {
-  const { selectedCommodity, setSelectedCommodity } = useEnergyStore();
-  const [data, setData] = useState<{ time: number; price: number; forecast?: number }[]>(
-    initialCommodityData[selectedCommodity]
-  );
-  
-  // Real-time chart streaming mock
-  useEffect(() => {
-    setData(initialCommodityData[selectedCommodity]);
-    const interval = setInterval(() => {
-      setData((prev) => {
-        const last = prev[prev.length - 1];
-        const newPrice = last.price + (Math.random() - 0.5) * 2;
-        const newArr = [...prev.slice(1), { time: last.time + 1, price: newPrice }];
-        
-        // Add forecast (simple linear regression over last 20 points projecting next 10)
-        const points = newArr.slice(-20).map((d, i) => [i, d.price]);
-        const regression = linearRegressionLine(linearRegression(points));
-        
-        return newArr.map((d, i) => {
-          if (i > newArr.length - 5) {
-            return { ...d, forecast: regression(i - (newArr.length - 20)) };
-          }
-          return d;
-        });
-      });
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [selectedCommodity]);
+  const {
+    selectedCommodity,
+    setSelectedCommodity,
+    commodityHistory,
+    loading,
+    error,
+    fetchEnergyData
+  } = useEnergyStore();
 
-  const currentPrice = data[data.length - 1]?.price || 0;
-  const prevPrice = data[data.length - 2]?.price || 0;
-  const change = (((currentPrice - prevPrice) / prevPrice) * 100).toFixed(2);
+  useEffect(() => {
+    fetchEnergyData();
+    const interval = setInterval(fetchEnergyData, 60000);
+    return () => clearInterval(interval);
+  }, [fetchEnergyData]);
+
+  const prices = commodityHistory[selectedCommodity] ?? [];
+  console.log('Frontend received data:', prices);
+
+  const currentPrice = prices[prices.length - 1]?.price || 0;
+  const prevPrice = prices[prices.length - 2]?.price || currentPrice;
+  const change = prevPrice ? (((currentPrice - prevPrice) / prevPrice) * 100).toFixed(2) : '0.00';
 
   return (
     <div className="p-8 max-w-7xl mx-auto w-full flex flex-col gap-6 h-full mt-4">
@@ -97,46 +83,54 @@ export default function Prices() {
         <div className="glass-card p-6 rounded-xl md:col-span-2">
           <h3 className="text-slate-400 font-medium mb-4">Price Stream & Forecast</h3>
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                <XAxis dataKey="time" hide />
-                <YAxis 
-                  domain={['auto', 'auto']} 
-                  stroke="#ffffff50" 
-                  tickFormatter={(val) => `$${val}`}
-                  fontSize={12}
-                />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#0f172a', borderColor: '#ffffff20', borderRadius: '8px' }}
-                  itemStyle={{ color: '#fff' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="price" 
-                  stroke="#F59E0B" 
-                  strokeWidth={2}
-                  fillOpacity={1} 
-                  fill="url(#colorPrice)" 
-                  isAnimationActive={false}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="forecast" 
-                  stroke="#10B981" 
-                  strokeWidth={2} 
-                  strokeDasharray="5 5" 
-                  dot={false}
-                  isAnimationActive={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            {loading && !prices.length ? (
+              <div className="h-full w-full flex items-center justify-center text-white">Loading energy data...</div>
+            ) : error ? (
+              <div className="h-full w-full flex items-center justify-center text-red-400">{error}</div>
+            ) : !prices.length ? (
+              <div className="h-full w-full flex items-center justify-center text-slate-400">No energy data available yet.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={prices} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                  <XAxis dataKey="time" hide />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    stroke="#ffffff50"
+                    tickFormatter={(val) => `$${val}`}
+                    fontSize={12}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#ffffff20', borderRadius: '8px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="price"
+                    stroke="#F59E0B"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorPrice)"
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="forecast"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>
