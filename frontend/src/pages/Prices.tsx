@@ -28,7 +28,7 @@ const Prices = () => {
 
   return (
     <div className="w-full h-screen p-4 pb-32 bg-transparent font-mono text-slate-300 overflow-hidden relative flex flex-col items-center justify-start">
-      
+
       {/* Absolute Header (DATAV Unified Theme) */}
       <div className="absolute top-10 left-10 z-10 flex flex-col gap-1">
         <div className="text-xl font-bold tracking-widest text-white flex items-center gap-3">
@@ -41,7 +41,7 @@ const Prices = () => {
       </div>
 
       <div className="w-full flex-1 max-w-[1600px] mt-40 relative grid grid-cols-12 gap-6 px-4 lg:px-10 pointer-events-auto h-full pb-10">
-        
+
         {/* Left: Ticker Sidebar */}
         <div className="col-span-12 lg:col-span-4 flex flex-col justify-start">
           <HudPanel title="Live Ticker Sidebar // ASSETS">
@@ -51,8 +51,8 @@ const Prices = () => {
                   key={item.id}
                   onClick={() => setSelected(item.id)}
                   className={`w-full p-4 rounded-none border transition-all duration-300 text-left relative overflow-hidden group ${selected === item.id
-                      ? 'bg-cyan-900/20 border-cyan-500/50 shadow-[0_0_25px_rgba(34,211,238,0.1)]'
-                      : 'bg-black/40 border-slate-800 hover:border-slate-600'
+                    ? 'bg-cyan-900/20 border-cyan-500/50 shadow-[0_0_25px_rgba(34,211,238,0.1)]'
+                    : 'bg-black/40 border-slate-800 hover:border-slate-600'
                     }`}
                 >
                   <div className="flex justify-between items-start relative z-10">
