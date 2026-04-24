@@ -11,8 +11,26 @@ import { errorMiddleware, notFoundMiddleware } from './middleware/error.middlewa
 const app = express();
 
 app.use(helmet());
-const allowedOrigins = new Set([...env.corsOrigins, 'http://localhost:5173']);
-app.use(cors({ origin: Array.from(allowedOrigins), credentials: true }));
+const allowedOrigins = [
+  ...env.corsOrigins,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:5177',
+  'http://localhost:5178',
+  'http://localhost:5179'
+];
+app.use(cors({ 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost:')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }, 
+  credentials: true 
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'));

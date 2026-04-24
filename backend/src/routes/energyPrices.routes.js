@@ -93,12 +93,13 @@ async function fetchPricesFromYahoo() {
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 30);
 
-    const [brentHistory, wtiHistory] = await Promise.all([
+    const [brentHistory, wtiHistory, ngHistory] = await Promise.all([
       yahooFinance.historical('BZ=F', { period1: startDate, period2: endDate, interval: '1d' }),
-      yahooFinance.historical('CL=F', { period1: startDate, period2: endDate, interval: '1d' })
+      yahooFinance.historical('CL=F', { period1: startDate, period2: endDate, interval: '1d' }),
+      yahooFinance.historical('NG=F', { period1: startDate, period2: endDate, interval: '1d' })
     ]);
 
-    if (!Array.isArray(brentHistory) || !Array.isArray(wtiHistory)) {
+    if (!Array.isArray(brentHistory) || !Array.isArray(wtiHistory) || !Array.isArray(ngHistory)) {
       throw new Error('Yahoo Finance returned invalid historical data');
     }
 
@@ -114,14 +115,21 @@ async function fetchPricesFromYahoo() {
       wtiMap.set(date, item?.close ?? null);
     });
 
-    const allDates = new Set([...brentMap.keys(), ...wtiMap.keys()]);
+    const ngMap = new Map();
+    ngHistory.forEach(item => {
+      const date = item?.date instanceof Date ? item.date.toISOString().split('T')[0] : String(item?.date || '');
+      ngMap.set(date, item?.close ?? null);
+    });
+
+    const allDates = new Set([...brentMap.keys(), ...wtiMap.keys(), ...ngMap.keys()]);
     const data = Array.from(allDates)
       .filter((date) => date)
       .sort()
       .map(date => ({
         date,
         brent: brentMap.get(date) ?? null,
-        wti: wtiMap.get(date) ?? null
+        wti: wtiMap.get(date) ?? null,
+        ng: ngMap.get(date) ?? null
       }));
 
     if (data.length < 20) {
@@ -175,6 +183,39 @@ router.get('/latest', async (req, res) => {
   } catch (error) {
     console.error('Energy prices latest fetch failed:', error);
     return res.status(500).json({ success: false, message: 'Unable to load historical energy prices' });
+  }
+});
+
+let liveCache = null;
+let liveCacheTime = 0;
+
+router.get('/live', async (req, res) => {
+  try {
+    const now = Date.now();
+    // 10 second memory cache shields Yahoo from timeouts
+    if (liveCache && (now - liveCacheTime < 10000)) {
+      return res.json({ success: true, live: liveCache, cached: true });
+    }
+
+    // Ping real-time immediate market quotes
+    const quotes = await yahooFinance.quote(['CL=F', 'BZ=F', 'NG=F']);
+    const liveData = {
+      wti: quotes.find(q => q.symbol === 'CL=F')?.regularMarketPrice || null,
+      brent: quotes.find(q => q.symbol === 'BZ=F')?.regularMarketPrice || null,
+      ng: quotes.find(q => q.symbol === 'NG=F')?.regularMarketPrice || null,
+    };
+    
+    liveCache = liveData;
+    liveCacheTime = now;
+    
+    return res.json({ success: true, live: liveData, cached: false });
+  } catch (error) {
+    console.error('Energy prices live quote failed:', error);
+    // return stale cache if available upon timeout rather than crashing UX
+    if (liveCache) {
+      return res.json({ success: true, live: liveCache, cached: true, error: true });
+    }
+    return res.status(500).json({ success: false, message: 'Unable to get live quotes' });
   }
 });
 

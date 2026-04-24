@@ -2,15 +2,16 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { HudPanel } from '@/components/ui/HudPanel';
 import { MOCK_COUNTRY_PROFILES } from '@/lib/data';
-
-const CONFLICT_EVENTS = [
-  { id: 1, name: 'Russia-Ukraine War', year: 2022, impact: 95 },
-  { id: 2, name: 'Red Sea Route Disruption', year: 2023, impact: 80 },
-  { id: 3, name: 'Middle East Tensions', year: 2024, impact: 85 },
-  { id: 4, name: 'European Gas Crisis', year: 2022, impact: 90 },
-];
+import { useEnergyStore } from '@/store/energyStore';
+import { useEffect } from 'react';
 
 export default function Supply() {
+  const { supplyEvents, fetchSupplyData, supplyLoading } = useEnergyStore();
+  
+  useEffect(() => {
+    fetchSupplyData();
+  }, [fetchSupplyData]);
+
   const topRisk = [...MOCK_COUNTRY_PROFILES].sort((a, b) => b.conflictRisk - a.conflictRisk).slice(0, 10);
 
   return (
@@ -32,8 +33,10 @@ export default function Supply() {
         {/* Left Panel */}
         <div className="flex-1 flex flex-col gap-6">
           <HudPanel title="Recent Major Disruptions // INCIDENTS">
-            <div className="flex flex-col gap-3">
-              {CONFLICT_EVENTS.map(event => (
+            <div className="flex flex-col gap-3 min-h-[300px]">
+              {supplyLoading ? (
+                 <div className="h-full w-full py-20 flex items-center justify-center text-cyan-400 animate-pulse text-xs tracking-widest uppercase">Fetching Logistics Database...</div>
+              ) : supplyEvents.map(event => (
                 <div key={event.id} className="bg-black/80 p-4 relative border border-slate-800 flex justify-between items-center group hover:border-cyan-500/50 transition-colors">
                   <div className="absolute top-0 left-0 w-1 h-1 border-t border-l border-white/40 group-hover:border-white transition-colors" />
                   <div className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-white/40 group-hover:border-white transition-colors" />

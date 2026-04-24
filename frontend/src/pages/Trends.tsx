@@ -5,18 +5,15 @@ import {
 } from 'recharts';
 import { ShieldAlert, Zap, ThermometerSun, AlertTriangle, Globe } from 'lucide-react';
 import { HudPanel } from '@/components/ui/HudPanel';
-
-const data = [
-  { year: '2018', renewables: 24, fossil: 76, volatility: 10, cost: 40 },
-  { year: '2019', renewables: 26, fossil: 74, volatility: 12, cost: 42 },
-  { year: '2020', renewables: 29, fossil: 71, volatility: 8, cost: 35 },
-  { year: '2021', renewables: 30, fossil: 70, volatility: 15, cost: 48 },
-  { year: '2022', renewables: 31, fossil: 69, volatility: 85, cost: 92 }, // Conflict Spike
-  { year: '2024', renewables: 35, fossil: 65, volatility: 50, cost: 78 },
-  { year: '2026', renewables: 42, fossil: 58, volatility: 35, cost: 60 },
-];
+import { useEnergyStore } from '@/store/energyStore';
+import { useEffect } from 'react';
 
 const Trends = () => {
+  const { trendsData, fetchTrendsData, trendsLoading } = useEnergyStore();
+  
+  useEffect(() => {
+    fetchTrendsData();
+  }, [fetchTrendsData]);
   return (
     <div className="w-full h-screen p-4 pb-32 bg-transparent font-mono text-slate-300 overflow-hidden relative flex flex-col items-center justify-start">
 
@@ -109,9 +106,12 @@ const Trends = () => {
               </div>
 
               <div className="flex-1 w-full min-h-0 relative z-10">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+                {trendsLoading ? (
+                  <div className="h-full w-full flex items-center justify-center text-cyan-400 animate-pulse text-xs tracking-widest uppercase">Fetching Analytics Engine...</div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={trendsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                     <XAxis
                       dataKey="year"
                       stroke="#64748b"
@@ -156,6 +156,7 @@ const Trends = () => {
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
+                )}
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-800 flex justify-between text-[9px] font-mono text-slate-500 font-bold tracking-widest relative z-10">

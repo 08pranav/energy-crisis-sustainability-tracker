@@ -2,9 +2,8 @@ import React from 'react';
 import { SvgGlobe } from '@/components/maps/SvgGlobe';
 import { HudPanel } from '@/components/ui/HudPanel';
 import { LineChart, Line, AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
-import { initialCommodityData } from '@/lib/data';
-
-// Generic tiny line chart for HUD panels
+import { useEnergyStore } from '@/store/energyStore';
+import { useEffect, useState } from 'react';// Generic tiny line chart for HUD panels
 function TinyHUDChart({ data, dataKey, color }: { data: any[], dataKey: string, color: string }) {
   return (
     <div className="h-24 w-full mt-2 border border-slate-800/50 p-1 bg-black/20">
@@ -23,13 +22,38 @@ function TinyHUDChart({ data, dataKey, color }: { data: any[], dataKey: string, 
 }
 
 export default function Home() {
-  const wtiArray = initialCommodityData.wti_crude;
-  const gasArray = initialCommodityData.natural_gas;
+  const { commodityHistory, fetchEnergyData, loading, error, startRealTimeTicker } = useEnergyStore();
+  const [timeStr, setTimeStr] = useState('');
+
+  useEffect(() => {
+    fetchEnergyData();
+    startRealTimeTicker();
+    const interval = setInterval(fetchEnergyData, 60000);
+    const clock = setInterval(() => {
+      const now = new Date();
+      setTimeStr(`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} // ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`);
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(clock);
+    };
+  }, [fetchEnergyData]);
+
+  const wtiArrayRaw = commodityHistory.wti_crude ?? [];
+  const gasArrayRaw = commodityHistory.natural_gas ?? [];
+  
+  // ensure there is some sample data if the API returned an empty array locally
+  const wtiArray = wtiArrayRaw.length > 0 ? wtiArrayRaw : [{ time: 0, price: 80 }];
+  const gasArray = gasArrayRaw.length > 0 ? gasArrayRaw : [{ time: 0, price: 2.80 }];
+  
+  const currentWti = wtiArray[wtiArray.length - 1]?.price || 0;
+  const currentGas = gasArray[gasArray.length - 1]?.price || 0;
   
   return (
     <div className="w-full h-full p-2 lg:p-4 pb-24 lg:pb-32 bg-transparent flex flex-col font-mono text-slate-300 overflow-hidden">
       
       {/* HUD Header */}
+      {error && <div className="absolute top-2 left-1/2 -translate-x-1/2 z-[100] bg-red-900 border border-red-500 text-white text-xs px-4 py-2 font-mono">SYS_ERR: {error}</div>}
       <div className="flex flex-col lg:flex-row justify-between items-start z-10 w-full shrink-0 gap-4 lg:gap-0">
         <div className="flex flex-col gap-1 w-full lg:w-auto text-center lg:text-left">
           <div className="text-xl lg:text-2xl font-bold tracking-widest text-white flex items-center justify-center lg:justify-start gap-3">
@@ -42,8 +66,8 @@ export default function Home() {
         </div>
         
         <div className="text-center lg:text-right flex flex-col gap-1 font-bold w-full lg:w-auto">
-          <div className="text-[10px] text-cyan-400">SYS_STATUS: NOMINAL</div>
-          <div className="text-xs lg:text-sm tracking-widest text-slate-400 font-normal">T: <span className="text-white">2026.04.23 // 23:31</span></div>
+          <div className="text-[10px] text-cyan-400">SYS_STATUS: {loading ? 'FETCHING' : 'NOMINAL'}</div>
+          <div className="text-xs lg:text-sm tracking-widest text-slate-400 font-normal">T: <span className="text-white">{timeStr || 'LOADING...'}</span></div>
           <div className="text-[10px] text-slate-600 hidden sm:block">CONNECTION: SECURE (wss://)</div>
         </div>
       </div>
@@ -55,9 +79,9 @@ export default function Home() {
         <div className="w-full lg:w-[320px] shrink-0 h-auto lg:h-full flex flex-col gap-4 z-10 pointer-events-auto overflow-y-visible lg:overflow-y-auto pb-2 lg:pb-8 hide-scrollbar order-2 lg:order-1">
           
           <HudPanel title="System Analytics // WTI Crude">
-            <div className="text-4xl text-white font-bold tracking-tighter mb-1 mt-1">$82.45</div>
+            <div className="text-4xl text-white font-bold tracking-tighter mb-1 mt-1">${currentWti.toFixed(2)}</div>
             <div className="text-[10px] text-cyan-400 mb-4">+1.2% // Trend Accelerating</div>
-            <TinyHUDChart data={wtiArray} dataKey="price" color="#ffffff" />
+            <TinyHUDChart data={wtiArray.slice(-20)} dataKey="price" color="#ffffff" />
             <div className="grid grid-cols-2 gap-2 mt-4 text-[10px]">
               <div className="bg-black/60 p-2 border border-slate-800">
                 <div className="text-slate-500">VOLATILITY</div>
@@ -152,8 +176,8 @@ export default function Home() {
           </HudPanel>
 
           <HudPanel title="Natural Gas Flux // EU">
-            <div className="text-2xl text-white font-bold tracking-tighter mb-1 mt-1">$2.84 <span className="text-[10px] font-normal text-slate-500">/ MMBtu</span></div>
-            <TinyHUDChart data={gasArray} dataKey="price" color="#22d3ee" />
+            <div className="text-2xl text-white font-bold tracking-tighter mb-1 mt-1">${currentGas.toFixed(2)} <span className="text-[10px] font-normal text-slate-500">/ MMBtu</span></div>
+            <TinyHUDChart data={gasArray.slice(-20)} dataKey="price" color="#22d3ee" />
           </HudPanel>
 
           <HudPanel title="Node Detection">
