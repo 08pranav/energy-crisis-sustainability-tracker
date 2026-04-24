@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import {
   ComposedChart, Area, Bar, XAxis, YAxis, CartesianGrid,
@@ -5,6 +6,21 @@ import {
 } from 'recharts';
 import { Activity, Globe, Info, Zap, ShieldAlert } from 'lucide-react';
 import { HudPanel } from '@/components/ui/HudPanel';
+=======
+import React, { useEffect } from 'react';
+import {
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from 'recharts';
+import { useEnergyStore, CommodityType } from '@/store/energyStore';
+import { SDGBadge } from '@/components/ui/Badges';
+>>>>>>> cab5ae5 (Work done so far)
 
 // Enhanced data with volatility and volume metrics
 const data = [
@@ -16,6 +32,7 @@ const data = [
   { time: '20:00', price: 7100, volatility: 350, volume: 120 },
 ];
 
+<<<<<<< HEAD
 const Prices = () => {
   const [selected, setSelected] = useState('CRUDE');
 
@@ -25,6 +42,30 @@ const Prices = () => {
     { id: 'GAS', name: 'Natural Gas', inr: '₹278.40', usd: '$3.34', change: '-0.5%', up: false },
     { id: 'COAL', name: 'Coal', inr: '₹11,350', usd: '$135.62', change: '-1.2%', up: false },
   ];
+=======
+export default function Prices() {
+  const {
+    selectedCommodity,
+    setSelectedCommodity,
+    commodityHistory,
+    loading,
+    error,
+    fetchEnergyData
+  } = useEnergyStore();
+
+  useEffect(() => {
+    fetchEnergyData();
+    const interval = setInterval(fetchEnergyData, 60000);
+    return () => clearInterval(interval);
+  }, [fetchEnergyData]);
+
+  const prices = commodityHistory[selectedCommodity] ?? [];
+  console.log('Frontend received data:', prices);
+
+  const currentPrice = prices[prices.length - 1]?.price || 0;
+  const prevPrice = prices[prices.length - 2]?.price || currentPrice;
+  const change = prevPrice ? (((currentPrice - prevPrice) / prevPrice) * 100).toFixed(2) : '0.00';
+>>>>>>> cab5ae5 (Work done so far)
 
   return (
     <div className="w-full h-screen p-4 pb-32 bg-transparent font-mono text-slate-300 overflow-hidden relative flex flex-col items-center justify-start">
@@ -86,6 +127,7 @@ const Prices = () => {
           </HudPanel>
         </div>
 
+<<<<<<< HEAD
         {/* Right: Advanced Forensic Panel */}
         <div className="col-span-12 lg:col-span-8 flex flex-col h-full">
           <HudPanel title="FORENSIC MARKET SCAN // ALGO" className="h-[550px] flex flex-col">
@@ -176,6 +218,60 @@ const Prices = () => {
               </span>
             </div>
           </HudPanel>
+=======
+        <div className="glass-card p-6 rounded-xl md:col-span-2">
+          <h3 className="text-slate-400 font-medium mb-4">Price Stream & Forecast</h3>
+          <div className="h-64 w-full">
+            {loading && !prices.length ? (
+              <div className="h-full w-full flex items-center justify-center text-white">Loading energy data...</div>
+            ) : error ? (
+              <div className="h-full w-full flex items-center justify-center text-red-400">{error}</div>
+            ) : !prices.length ? (
+              <div className="h-full w-full flex items-center justify-center text-slate-400">No energy data available yet.</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={prices} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                  <XAxis dataKey="time" hide />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    stroke="#ffffff50"
+                    tickFormatter={(val) => `$${val}`}
+                    fontSize={12}
+                  />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#ffffff20', borderRadius: '8px' }}
+                    itemStyle={{ color: '#fff' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="price"
+                    stroke="#F59E0B"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorPrice)"
+                    isAnimationActive={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="forecast"
+                    stroke="#10B981"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+>>>>>>> cab5ae5 (Work done so far)
         </div>
       </div>
     </div>
