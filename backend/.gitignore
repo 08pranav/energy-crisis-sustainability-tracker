@@ -1,0 +1,21 @@
+# Environment variables — never commit these
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Uploads (user-submitted files)
+uploads/*
+!uploads/.gitkeep
+
+# OS
+.DS_Store
