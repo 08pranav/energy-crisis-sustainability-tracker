@@ -1,5 +1,4 @@
 <div align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f6e56,100:185fa5&height=200&section=header&text=Energy%20Crisis%20%26%20Sustainability%20Tracker&fontSize=32&fontColor=ffffff&fontAlignY=38&desc=A%20Production-Grade%20Full-Stack%20Platform%20for%20SDG%207%20%26%2013&descAlignY=58&descSize=16" width="100%"/>
 
 <p>
   <img src="https://img.shields.io/badge/React-19.x-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
