@@ -9,6 +9,7 @@ import adminRoutes from './admin.routes.js';
 import conflictsRoutes from './conflicts.routes.js';
 import reportsRoutes from './reports.routes.js';
 import debugRoutes from './debug.routes.js';
+import chatbotRoutes from './chatbot.routes.js';
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use('/admin', adminRoutes);
 router.use('/conflicts', conflictsRoutes);
 router.use('/reports', reportsRoutes);
 router.use('/debug', debugRoutes);
+router.use('/chatbot', chatbotRoutes);
 
 export default router;

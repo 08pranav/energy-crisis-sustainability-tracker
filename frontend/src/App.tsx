@@ -9,6 +9,7 @@ import Prices from './pages/Prices';
 import Supply from './pages/Supply';
 import Trends from './pages/Trends';
 import MapPage from './pages/Map';
+import Chatbot from './pages/Chatbot';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/supply" element={<Supply />} />
           <Route path="/trends" element={<Trends />} />
           <Route path="/map" element={<MapPage />} />
+          <Route path="/chatbot" element={<Chatbot />} />
           {/* Add your other routes here */}
         </Routes>
       </main>

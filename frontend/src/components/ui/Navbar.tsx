@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Globe, TrendingUp, Zap, DollarSign } from 'lucide-react'; // Using Lucide for clean icons
+import { Home, Globe, TrendingUp, Zap, DollarSign, MessageCircle } from 'lucide-react'; // Using Lucide for clean icons
 
 const Navbar = () => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const Navbar = () => {
     { name: 'TRENDS', path: '/trends', icon: <TrendingUp size={18} /> },
     { name: 'SUPPLY', path: '/supply', icon: <Zap size={18} /> },
     { name: 'PRICES', path: '/prices', icon: <DollarSign size={18} /> },
+    { name: 'CHATBOT', path: '/chatbot', icon: <MessageCircle size={18} /> },
   ];
 
   return (
