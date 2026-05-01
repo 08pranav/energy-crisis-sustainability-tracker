@@ -44,6 +44,8 @@ It pulls live and historical energy price data, maps it against geopolitical con
 
 📹 **[Watch Demo Video](https://drive.google.com/file/d/1DJk9Roy-ZhMjQtU9EeWLpeWFJuMoe5RS/view?usp=sharing)**
 
+📊 **[View Presentation Slides](https://drive.google.com/file/d/1wsVyXKX74VdsZ5uoeBKMDI9v2cimAhfP/view?usp=sharing)**
+
 ---
 
 ## Live Preview
