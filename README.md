@@ -75,10 +75,6 @@ Most energy data platforms are either locked behind paywalls, too technical for 
 ## Tech Stack
 
 ### Frontend
-| Tool | Version | Why |
-| :--- | :--- | :--- |
-| React | 19.x | UI framework |
-| TypeScript | 6.x | Type safety across the entire frontend |
 | Vite | 8.x | Build tool and dev server |
 | Tailwind CSS | 4.x | Utility-first styling with the HUD terminal theme |
 | Zustand | 5.x | Lightweight global state (energy prices, selected country, map mode) |
@@ -103,6 +99,24 @@ Most energy data platforms are either locked behind paywalls, too technical for 
 
 ---
 
+## Deployment (Vercel)
+
+This repository is a monorepo with a separate `frontend` and `backend` service. The `frontend` is configured to be deployed on Vercel as a static site built with Vite. The backend is an Express server and should be deployed separately (e.g., Render, Railway, or other Node hosts). Below are the steps to deploy the frontend to Vercel and connect it to your backend.
+
+### Steps to deploy frontend to Vercel
+
+1. In the Vercel dashboard, create a new project and import this GitHub repository.
+2. Set the project root to the repository root (Vercel will detect the `vercel.json`).
+3. Add Environment Variables in Vercel for the frontend build/runtime:
+  - `VITE_API_URL` = `https://<your-backend-url>` (point this to your deployed backend API)
+4. Build & Output settings (handled by `vercel.json`):
+  - Build command: `npm run build` (runs in `frontend` package.json)
+  - Output directory: `dist`
+5. Deploy. Once the build completes, your frontend will be served by Vercel.
+
+### Notes
+- The `backend` must be deployed separately. Once deployed, update `VITE_API_URL` in Vercel to point to the backend URL.
+- If you prefer serverless APIs on Vercel, the backend must be refactored into Vercel Functions (in `/api`) — this is not performed automatically.
 ## Features
 
 ### Real-Time Energy Prices

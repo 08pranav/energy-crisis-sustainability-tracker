@@ -1,0 +1,402 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+model User {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  email              String   @unique
+  passwordHash       String
+  role               Role     @default(ANALYST)
+  isActive           Boolean  @default(true)
+  lastLoginAt        DateTime?
+  refreshTokenVersion Int     @default(0)
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([email])
+  @@index([role])
+}
+
+enum Role {
+  ADMIN
+  ANALYST
+}
+
+// ============================================
+// ENERGY PRICES & COMMODITIES
+// ============================================
+model EnergyPrice {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryName        String
+  iso3               String   @db.String // Country code
+  commodity          EnergyCommodity
+  price              Float    @db.Double
+  currency           String   @default("USD")
+  unit               String   // e.g., "$/barrel", "$/MMBtu"
+  source             PriceSource
+  recordedAt         DateTime
+  region             String?
+  metadata           String?  // JSON string for flexible data
+  
+  conflictEventId    String?  @db.ObjectId
+  conflictEvent      ConflictEvent? @relation(fields: [conflictEventId], references: [id], onDelete: SetNull)
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([iso3, commodity, recordedAt])
+  @@index([conflictEventId])
+  @@index([recordedAt])
+}
+
+enum EnergyCommodity {
+  CRUDE_OIL
+  NATURAL_GAS
+  COAL
+  ELECTRICITY
+  LNG
+  BRENT
+  WTI
+}
+
+enum PriceSource {
+  IEA
+  BP
+  MANUAL
+  SIMULATED
+  YAHOO_FINANCE
+}
+
+// ============================================
+// CONFLICT EVENTS
+// ============================================
+model ConflictEvent {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  title              String
+  conflictType       ConflictType
+  affectedCountriesIso3 String[] // Array of ISO3 codes
+  affectedCommodities String[]   // Array of commodity types
+  startDate          DateTime
+  endDate            DateTime?
+  severity           SeverityLevel
+  impactScore        Int      @db.Int // 0-100
+  summary            String
+  sourceUrl          String?
+  isActive           Boolean  @default(true)
+  
+  energyPrices       EnergyPrice[]
+  geopoliticalRisks  GeopoliticalRisk[]
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([isActive, severity, startDate])
+  @@index([startDate])
+}
+
+enum ConflictType {
+  WAR
+  SANCTIONS
+  BLOCKADE
+  CYBER
+  CIVIL_UNREST
+  NATURAL_DISASTER
+}
+
+enum SeverityLevel {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// ============================================
+// COUNTRY DEPENDENCY & GEOPOLITICAL RISK
+// ============================================
+model CountryDependency {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryName        String
+  iso3               String   @unique @db.String
+  region             String
+  totalEnergyImportPct Float  @db.Double // 0-100
+  fossilDependencyPct Float  @db.Double  // 0-100
+  renewableSharePct  Float   @db.Double  // 0-100
+  riskScore          Int?    @db.Int     // 0-100
+  year               Int
+  source             DependencySource
+  
+  majorSuppliers     Supplier[]
+  geopoliticalRisks  GeopoliticalRisk[]
+  renewableEnergy    RenewableEnergy?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([iso3])
+  @@index([year])
+  @@index([region])
+}
+
+model Supplier {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryDependencyId String  @db.ObjectId
+  countryDependency  CountryDependency @relation(fields: [countryDependencyId], references: [id], onDelete: Cascade)
+  
+  country            String
+  sharePct           Float    @db.Double // 0-100
+
+  @@index([countryDependencyId])
+}
+
+enum DependencySource {
+  IEA
+  BP
+  MERGED
+  MANUAL
+}
+
+model GeopoliticalRisk {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryIso3        String   @db.String
+  countryDependencyId String? @db.ObjectId
+  countryDependency  CountryDependency? @relation(fields: [countryDependencyId], references: [id], onDelete: SetNull)
+  
+  riskType           RiskType
+  riskScore          Int      @db.Int     // 0-100
+  description        String
+  
+  conflictEventId    String?  @db.ObjectId
+  conflictEvent      ConflictEvent? @relation(fields: [conflictEventId], references: [id], onDelete: SetNull)
+  
+  assessmentDate     DateTime
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([countryIso3])
+  @@index([riskScore])
+  @@index([assessmentDate])
+}
+
+enum RiskType {
+  POLITICAL_INSTABILITY
+  SUPPLY_DISRUPTION
+  MARKET_VOLATILITY
+  CLIMATE_IMPACT
+  INFRASTRUCTURE_VULNERABILITY
+  GEOPOLITICAL_TENSION
+}
+
+// ============================================
+// RENEWABLE ENERGY TRACKING
+// ============================================
+model RenewableEnergy {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryIso3        String   @unique @db.String
+  countryDependencyId String  @unique @db.ObjectId
+  countryDependency  CountryDependency @relation(fields: [countryDependencyId], references: [id], onDelete: Cascade)
+  
+  solarCapacityMw    Float    @db.Double   // Megawatts
+  windCapacityMw     Float    @db.Double
+  hydroCapacityMw    Float    @db.Double
+  nuclearCapacityMw  Float    @db.Double
+  totalRenewableMw   Float    @db.Double
+  totalCapacityMw    Float    @db.Double
+  renewablePercentage Float  @db.Double   // 0-100
+  
+  year               Int
+  source             String   @default("IEA")
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([countryIso3])
+  @@index([year])
+}
+
+// ============================================
+// SUPPLY CHAIN & FORECASTING
+// ============================================
+model SupplyChainMetric {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  corridor            String   // e.g., "Middle East -> Europe"
+  commodities        String[]  // Energy commodities in this corridor
+  resilientScore     Int      @db.Int     // 0-100: supply chain resilience
+  disruptionRisk     Int      @db.Int     // 0-100
+  alternativeRoutes  Int      @db.Int     // Number of alternative supply routes
+  
+  description        String?
+  lastAssessmentDate DateTime
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([corridor])
+}
+
+model EnergyForecast {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  commodity          EnergyCommodity
+  forecastPeriod     String   // "Q2 2026", "H2 2026", etc.
+  predictedTrendDirection TrendDirection
+  confidence         Int      @db.Int     // 0-100
+  estimatedPriceMin  Float?   @db.Double
+  estimatedPriceMax  Float?   @db.Double
+  
+  rationale          String
+  riskFactors        String[] // Array of risk factors
+  opportunities      String[] // Array of opportunities
+  
+  createdBy          String
+  forecastDate       DateTime @default(now())
+  targetDate         DateTime // Date this forecast is for
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([commodity, forecastDate])
+  @@index([targetDate])
+}
+
+enum TrendDirection {
+  BULLISH
+  BEARISH
+  SIDEWAYS
+  VOLATILE
+}
+
+// ============================================
+// ALERTS & MONITORING
+// ============================================
+model Alert {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  title              String
+  alertType          AlertType
+  severity           SeverityLevel
+  description        String
+  affectedCommodities String[]
+  affectedCountries  String[] // ISO3 codes
+  
+  isResolved         Boolean  @default(false)
+  resolvedAt         DateTime?
+  resolvedBy         String?
+  
+  triggeredBy        String   // What triggered the alert (e.g., "Price spike", "Conflict event")
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([isResolved, severity])
+  @@index([createdAt])
+}
+
+enum AlertType {
+  PRICE_SPIKE
+  SUPPLY_DISRUPTION
+  CONFLICT_ESCALATION
+  RENEWABLE_MILESTONE
+  SDG_IMPACT
+  MARKET_VOLATILITY
+  FORECAST_WARNING
+}
+
+// ============================================
+// REPORTS & ANALYTICS
+// ============================================
+model Report {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  title              String
+  reportType         ReportType
+  description        String?
+  generatedBy        String
+  
+  dataCoverage       String   // e.g., "Q1 2026", "Jan-Mar 2026"
+  countryScope       String[] // ISO3 codes, or [] for global
+  commodityScope     String[] // Commodity types, or [] for all
+  
+  content            String   // JSON string with report content/findings
+  downloadUrl        String?
+  
+  isPublished        Boolean  @default(false)
+  publishedAt        DateTime?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([reportType, isPublished])
+  @@index([publishedAt])
+}
+
+enum ReportType {
+  MARKET_ANALYSIS
+  SUPPLY_CHAIN_ASSESSMENT
+  RENEWABLE_PROGRESS
+  CRISIS_FORECAST
+  SDG_PROGRESS
+  GEOPOLITICAL_RISK_MATRIX
+  COUNTRY_PROFILE
+}
+
+// ============================================
+// SUSTAINABLE DEVELOPMENT GOALS (SDG)
+// ============================================
+model SDGProgress {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  countryIso3        String   @db.String
+  sdgNumber          Int      @db.Int     // SDG 7 or 13
+  indicator          String   // e.g., "Access to electricity", "Renewable energy share"
+  
+  currentValue       Float    @db.Double
+  targetValue        Float    @db.Double
+  progressPercentage Float    @db.Double  // 0-100
+  
+  year               Int
+  source             String   // IEA, UN, etc.
+  notes              String?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([countryIso3, sdgNumber, indicator, year])
+  @@index([countryIso3, sdgNumber])
+  @@index([year])
+}
+
+// ============================================
+// DATA AUDIT LOG
+// ============================================
+model AuditLog {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  action             String   // CREATE, UPDATE, DELETE
+  entityType         String   // Model name (e.g., "EnergyPrice", "ConflictEvent")
+  entityId           String   // ID of the entity
+  changes            String   // JSON string of what changed
+  
+  performedBy        String?  // User who made the change
+  ipAddress          String?
+  
+  createdAt          DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([performedBy])
+  @@index([createdAt])
+}
